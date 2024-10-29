@@ -59,6 +59,7 @@ export class DepartmentComponent implements OnInit {
   }
 
   createDepartment(): void {
+    this.populateDept();
     this.departmentService.createDepartment(this.department).subscribe({
       next: (newDepartment: Department) => {
         console.log("Department created:", newDepartment);
@@ -73,7 +74,13 @@ export class DepartmentComponent implements OnInit {
     this.selectedDepartment = dept;
   }
 
+  populateDept(): void {
+    const { id, name,readOnly, mandatory } = this.departmentForm.value;
+    Object.assign(this.department, { id, name,readOnly, mandatory});
+  }
+
   updateDepartment(): void {
+    this.populateDept();
     this.departmentService.updateDepartment(this.department).subscribe({
       next: (updatedDepartment: Department) => {
         console.log("Department updated:", updatedDepartment);
@@ -100,3 +107,4 @@ export class DepartmentComponent implements OnInit {
     this.selectedDepartment = null;
   }
 }
+
