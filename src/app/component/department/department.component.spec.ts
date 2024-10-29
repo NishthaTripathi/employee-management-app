@@ -91,6 +91,6 @@ describe('DepartmentComponent', () => {
 
     component.getAllDepartments();
 
-    expect(console.error).toHaveBeenCalledWith('An error occurred:', 'error');
+    expect(console.error).toHaveBeenCalledWith('An error occurred :', 'error');
   });
 });

@@ -37,8 +37,7 @@ export class DepartmentComponent implements OnInit {
 
   private handleError(error: any): void {
     this.refreshListAndResetForm();
-    console.log("Form reset on error");
-    console.error("An error occurred 1:", error);
+    console.error("An error occurred :", error);
 
     throw error;
   }
