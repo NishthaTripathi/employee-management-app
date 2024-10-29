@@ -11,6 +11,7 @@
         <th scope="col">Name</th>
         <th scope="col">Read Only</th>
         <th scope="col">Mandatory</th>
+        <th scope="col">Actions</th>
       </tr>
       </thead>
       <tbody>
@@ -24,7 +25,6 @@
         <td>
           <i [ngClass]="dept.mandatory ? 'bi bi-check-circle text-success' : 'bi bi-x-circle text-danger'"></i>
         </td>
-        <td>
         <td>
           <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal"
                   (click)="editDepartment(dept)" data-bs-target="#updateDepartment">

@@ -6,7 +6,7 @@ import {DepartmentComponent} from "./component/department/department.component";
 const routes: Routes = [
   { path: 'employees', component: EmployeeComponent },
   { path: 'departments', component: DepartmentComponent },
-  { path: '', redirectTo: '/employee', pathMatch: 'full' }  // Redirect to 'employee' as the default route
+  { path: '', redirectTo: '/employees', pathMatch: 'full' }
 ];
 
 @NgModule({
