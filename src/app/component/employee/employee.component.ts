@@ -1,126 +1,133 @@
-import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {Employee} from "../../model/employee";
-import {EmployeeService} from "../../service/employee.service";
-import {Department} from "../../model/department";
-import {DepartmentService} from "../../service/department.service";
-import {IDropdownSettings} from "ng-multiselect-dropdown";
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from "@angular/forms";
+import { Employee } from "../../model/employee";
+import { EmployeeService } from "../../service/employee.service";
+import { Department } from "../../model/department";
+import { DepartmentService } from "../../service/department.service";
+import { IDropdownSettings } from "ng-multiselect-dropdown";
 
 @Component({
   selector: 'app-employee',
   templateUrl: './employee.component.html',
   styleUrls: ['./employee.component.css']
 })
-export class EmployeeComponent  implements OnInit {
+export class EmployeeComponent implements OnInit {
 
-  empDetail !: FormGroup;
+  empDetail!: FormGroup;
   empObject: Employee = new Employee();
-  selectedEmployee: Employee= new Employee();
+  selectedEmployee: Employee = new Employee();
   empList: Employee[] = [];
   deptList: Department[] = [];
-  dropdownSettings :IDropdownSettings = {
-    singleSelection: false, // If you want multiple selections
+  dropdownSettings: IDropdownSettings = {
+    singleSelection: false,
     textField: "name",
-    idField:"id",
+    idField: "id",
     selectAllText: 'Select All',
     unSelectAllText: 'Unselect All',
     enableCheckAll: true,
     allowSearchFilter: true,
-    // Add any additional settings that are supported by the version you're using
   };
 
-  constructor(private formBuilder: FormBuilder, private empService: EmployeeService, private depService: DepartmentService) {
-  }
+  constructor(
+    private formBuilder: FormBuilder,
+    private empService: EmployeeService,
+    private depService: DepartmentService
+  ) {}
 
   ngOnInit(): void {
+    this.initializeForm();
     this.getAllEmployee();
     this.getAllDepartments();
+  }
+
+  initializeForm(): void {
     this.empDetail = this.formBuilder.group({
-        id: [''],
-        nameFirst: [''],
-        nameLast: [''],
-        departments: []
-      }
-    );
+      id: [''],
+      nameFirst: [''],
+      nameLast: [''],
+      departments: []
+    });
   }
 
-  createEmployee() {
-    console.log(this.empDetail);
-    this.empObject.id = this.empDetail.value.id;
-    this.empObject.nameFirst = this.empDetail.value.nameFirst;
-    this.empObject.nameLast = this.empDetail.value.nameLast;
-    this.empObject.departments = this.empDetail.value.departments;
+  handleError(error: any): void {
+    console.error("An error occurred:", error);
+    throw error;
+  }
+
+  populateEmployeeData(): void {
+    const { id, nameFirst, nameLast, departments } = this.empDetail.value;
+    Object.assign(this.empObject, { id, nameFirst, nameLast, departments });
+  }
+
+  createEmployee(): void {
+    this.populateEmployeeData();
     this.empService.createEmployee(this.empObject).subscribe({
-      next: (value) => {
-        console.log('Employee created:', value);
-        this.getAllEmployee();  // Refresh the list
+      next: (newEmployee: Employee) => {
+        console.log('Employee created:', newEmployee);
+        this.refreshListAndResetForm();
       },
-      error: (error) => {
-        console.error('Error creating employee:', error);
-      }
+      error: this.handleError
     });
   }
 
-  getAllEmployee() {
+  getAllEmployee(): void {
     this.empService.getAllEmployee().subscribe({
-      next: (res: Employee[]) => {
-        this.empList = res;
+      next: (employees: Employee[]) => {
+        this.empList = employees;
       },
-      error: (err: any) => {
-        console.error("Error while fetching data:", err);
-      }
+      error: this.handleError
     });
   }
 
-  updateEmployee() {
-    this.empObject.id =this.selectedEmployee.id;
-    this.empObject.nameFirst = this.empDetail.value.nameFirst;
-    this.empObject.nameLast = this.empDetail.value.nameLast;
-    this.empObject.departments = this.empDetail.value.departments;
+  updateEmployee(): void {
+    this.populateEmployeeData();
+    this.empObject.id = this.selectedEmployee.id;  // Retain original ID for update
     this.empService.updateEmployee(this.empObject).subscribe({
-      next: (res: Employee) => {
-        console.log('Employee updated:', res);
-        this.getAllEmployee();
-        this.empDetail.reset();
-        this.selectedEmployee=new Employee();
-
+      next: (updatedEmployee: Employee) => {
+        console.log('Employee updated:', updatedEmployee);
+        this.refreshListAndResetForm();
       },
-      error: (err: any) => {
-        console.error("Error updating employee:", err);
-      }
+      error: this.handleError
     });
   }
-  editEmployee( employee: Employee): void{
-    this.empDetail.controls['nameFirst'].setValue(employee.nameFirst);
-    this.empDetail.controls['nameLast'].setValue(employee.nameLast);
-    this.empDetail.controls['departments'].setValue(employee.departments);
-    this.selectedEmployee=employee;
+
+  editEmployee(employee: Employee): void {
+    this.setFormValues(employee);
+    this.selectedEmployee = employee;
   }
 
-  deleteEmployee(emp: Employee) {
-    this.empService.deleteEmployee(emp).subscribe({
-      next: (res: any) => {
-        console.log('Delete response:', res);
+  deleteEmployee(employee: Employee): void {
+    this.empService.deleteEmployee(employee).subscribe({
+      next: () => {
+        console.log('Employee deleted successfully');
         alert('Employee deleted successfully');
-        this.getAllEmployee();
-        this.empDetail.reset();
-
+        this.refreshListAndResetForm();
       },
-      error: (err: any) => {
-        console.error("Error deleting employee:", err);
-      }
+      error: this.handleError
     });
   }
 
-  getAllDepartments() {
+  setFormValues(employee: Employee): void {
+    this.empDetail.patchValue({
+      nameFirst: employee.nameFirst,
+      nameLast: employee.nameLast,
+      departments: employee.departments
+    });
+  }
+
+  getAllDepartments(): void {
     this.depService.getAllDepartments().subscribe({
-      next: (res: Department[]) => {
-        this.deptList = res;
+      next: (departments: Department[]) => {
+        this.deptList = departments;
       },
-      error: (err: any) => {
-        console.error("Error fetching departments:", err);
-      }
+      error: this.handleError
     });
   }
 
+  refreshListAndResetForm(): void {
+    this.getAllEmployee();
+    this.empDetail.reset();
+    this.empObject = new Employee();
+    this.selectedEmployee = new Employee();
+  }
 }

@@ -1,8 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
-import {Department} from "../../model/department";
-import {DepartmentService} from "../../service/department.service";
-
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { Department } from "../../model/department";
+import { DepartmentService } from "../../service/department.service";
 
 @Component({
   selector: 'app-department',
@@ -13,15 +12,21 @@ export class DepartmentComponent implements OnInit {
   departmentForm: FormGroup;
   department: Department = new Department();
   departments: Department[] = [];
-  selectedDepartment: Department = new Department();
-
+  selectedDepartment: Department | null = null;
 
   constructor(
     private fb: FormBuilder,
     private departmentService: DepartmentService
   ) {
+    this.departmentForm = this.createDepartmentForm();
+  }
 
-    this.departmentForm = this.fb.group({
+  ngOnInit(): void {
+    this.getAllDepartments();
+  }
+
+  createDepartmentForm(): FormGroup {
+    return this.fb.group({
       id: [''],
       name: [''],
       readOnly: [false],
@@ -29,8 +34,9 @@ export class DepartmentComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    this.getAllDepartments();
+  private handleError(error: any): void {
+    console.error("An error occurred:", error);
+    throw error;
   }
 
   getAllDepartments(): void {
@@ -38,52 +44,51 @@ export class DepartmentComponent implements OnInit {
       next: (departments: Department[]) => {
         this.departments = departments;
       },
-      error: (error: any) => {
-        console.error("Error fetching departments:", error);
-      }
+      error: this.handleError
     });
   }
 
+  prepareDepartmentForm(department: Department = new Department()): void {
+    this.departmentForm.patchValue({
+      id: department.id,
+      name: department.name,
+      readOnly: department.readOnly,
+      mandatory: department.mandatory
+    });
+    this.department = { ...department };
+  }
+
+  createOrUpdateDepartment(): void {
+    this.department = { ...this.department, ...this.departmentForm.value };
+    if (this.selectedDepartment) {
+      this.updateDepartment();
+    } else {
+      this.createDepartment();
+    }
+  }
 
   createDepartment(): void {
-    this.department.name = this.departmentForm.value.name;
-    this.department.readOnly = this.departmentForm.value.readOnly;
-    this.department.mandatory = this.departmentForm.value.mandatory;
     this.departmentService.createDepartment(this.department).subscribe({
       next: (newDepartment: Department) => {
         console.log("Department created:", newDepartment);
-        this.getAllDepartments();
-        this.departmentForm.reset();
+        this.refreshListAndResetForm();
       },
-      error: (error: any) => {
-        console.error("Error creating department:", error);
-      }
+      error: this.handleError
     });
   }
 
-  editDepartment( dept: Department): void{
-    this.departmentForm.controls['name'].setValue(dept.name);
-    this.departmentForm.controls['readOnly'].setValue(dept.readOnly);
-    this.departmentForm.controls['mandatory'].setValue(dept.mandatory);
-    this.selectedDepartment=dept;
+  editDepartment(dept: Department): void {
+    this.prepareDepartmentForm(dept);
+    this.selectedDepartment = dept;
   }
 
   updateDepartment(): void {
-    this.department.id=this.selectedDepartment.id;
-    this.department.name = this.departmentForm.value.name;
-    this.department.readOnly = this.departmentForm.value.readOnly;
-    this.department.mandatory = this.departmentForm.value.mandatory;
     this.departmentService.updateDepartment(this.department).subscribe({
       next: (updatedDepartment: Department) => {
         console.log("Department updated:", updatedDepartment);
-        this.getAllDepartments(); // Refresh the list
-        this.departmentForm.reset(); // Clear form
-      this.department= new Department();
-      this.selectedDepartment=new Department();
+        this.refreshListAndResetForm();
       },
-      error: (error: any) => {
-        console.error("Error updating department:", error);
-      }
+      error: this.handleError
     });
   }
 
@@ -93,9 +98,14 @@ export class DepartmentComponent implements OnInit {
         console.log("Department deleted successfully");
         this.getAllDepartments(); // Refresh the list
       },
-      error: (error: any) => {
-        console.error("Error deleting department:", error);
-      }
+      error: this.handleError
     });
+  }
+
+  private refreshListAndResetForm(): void {
+    this.getAllDepartments();
+    this.departmentForm.reset();
+    this.department = new Department();
+    this.selectedDepartment = null;
   }
 }
