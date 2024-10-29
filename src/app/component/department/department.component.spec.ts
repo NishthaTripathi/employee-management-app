@@ -59,9 +59,9 @@ describe('DepartmentComponent', () => {
   it('should create a new department', () => {
     const newDepartment: Department = {id: 2, name: 'IT', readOnly: false, mandatory: true};
     departmentService.createDepartment.and.returnValue(of(newDepartment));
-
+    component.department=newDepartment;
     component.createDepartment();
-    expect(departmentService.createDepartment).toHaveBeenCalledWith(component.department);
+    expect(departmentService.createDepartment).toHaveBeenCalledWith(newDepartment);
   });
 
   it('should update an existing department', () => {
