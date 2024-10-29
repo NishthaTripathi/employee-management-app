@@ -103,7 +103,6 @@ export class EmployeeComponent implements OnInit {
     this.empService.deleteEmployee(employee).subscribe({
       next: () => {
         console.log('Employee deleted successfully');
-        alert('Employee deleted successfully');
         this.refreshListAndResetForm();
       },
       error: this.handleError
