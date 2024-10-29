@@ -12,6 +12,7 @@ export class DashboardComponent implements OnInit {
 
   empDetail !: FormGroup;
   empObject: Employee = new Employee();
+  empList:Employee[]=[];
 
 
   constructor(private formBuilder: FormBuilder, private empService: EmployeeService) {

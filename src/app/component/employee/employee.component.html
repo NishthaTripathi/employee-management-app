@@ -1,1 +1,119 @@
-<p>employee works!</p>
+<div class="container">
+  <div id="navbarSupportedContent">
+    <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#createEmployee" type="button">
+      Create
+    </button>
+
+    <table class="table table-hover">
+      <thead>
+      <tr>
+        <th scope="col">Employee ID</th>
+        <th scope="col">First Name</th>
+        <th scope="col">Last Name</th>
+        <th scope="col">Departments</th>
+        <th scope="col">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let employee of empList">
+        <td>{{ employng generate component components/create-employee-modal
+          ee.id }}</td>
+        <td>{{ employee.nameFirst }}</td>
+        <td>{{ employee.nameLast }}</td>
+        <td>
+        <span *ngFor="let department of employee.departments; let i = index">
+          {{ department.name }}<span *ngIf="i < employee.departments.length - 1">, </span>
+        </span>
+        </td>
+        <td>
+          <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal"
+                  data-bs-target="#editEmployee" (click)="editEmployee(employee)">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button type="button" class="btn btn-outline-danger" (click)="deleteEmployee(employee)">
+            <i class="bi bi-trash"></i>
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+    <!-- Create Employee Modal -->
+    <div class="modal fade" id="createEmployee" tabindex="-1" aria-labelledby="createEmployeeLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="createEmployeeLabel">Create New Employee</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form [formGroup]="empDetail">
+              <div class="mb-3">
+                <label for="nameFirst" class="form-label">First Name</label>
+                <input type="text" formControlName="nameFirst" class="form-control" id="nameFirst">
+              </div>
+              <div class="mb-3">
+                <label for="nameLast" class="form-label">Last Name</label>
+                <input type="text" formControlName="nameLast" class="form-control" id="nameLast">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Departments</label>
+                <ng-multiselect-dropdown
+                  id="departments"
+                  formControlName="departments"
+                  [placeholder]="'Select departments'"
+                  [settings]="dropdownSettings"
+                  [data]="deptList">
+                </ng-multiselect-dropdown>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="createEmployee()">Submit
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Employee Modal -->
+    <div class="modal fade" id="editEmployee" tabindex="-1" aria-labelledby="editEmployeeModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editEmployeeModalLabel">Edit Employee</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form [formGroup]="empDetail">
+              <div class="mb-3">
+                <label for="firstName" class="form-label">First Name</label>
+                <input type="text" class="form-control" id="firstName" formControlName="nameFirst">
+              </div>
+              <div class="mb-3">
+                <label for="lastName" class="form-label">Last Name</label>
+                <input type="text" class="form-control" id="lastName" formControlName="nameLast">
+              </div>
+              <div class="mb-3">
+                <label for="departments" class="form-label">Departments</label>
+                <ng-multiselect-dropdown
+                  [data]="deptList"
+                  formControlName="departments"
+                  [settings]="dropdownSettings">
+                </ng-multiselect-dropdown>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="updateEmployee()">
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
