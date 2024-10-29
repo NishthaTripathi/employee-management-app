@@ -58,15 +58,6 @@ export class DepartmentComponent implements OnInit {
     this.department = { ...department };
   }
 
-  createOrUpdateDepartment(): void {
-    this.department = { ...this.department, ...this.departmentForm.value };
-    if (this.selectedDepartment) {
-      this.updateDepartment();
-    } else {
-      this.createDepartment();
-    }
-  }
-
   createDepartment(): void {
     this.departmentService.createDepartment(this.department).subscribe({
       next: (newDepartment: Department) => {
