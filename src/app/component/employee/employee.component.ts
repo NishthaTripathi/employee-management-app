@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from "@angular/forms";
-import { Employee } from "../../model/employee";
-import { EmployeeService } from "../../service/employee.service";
-import { Department } from "../../model/department";
-import { DepartmentService } from "../../service/department.service";
-import { IDropdownSettings } from "ng-multiselect-dropdown";
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup} from "@angular/forms";
+import {Employee} from "../../model/employee";
+import {EmployeeService} from "../../service/employee.service";
+import {Department} from "../../model/department";
+import {DepartmentService} from "../../service/department.service";
+import {IDropdownSettings} from "ng-multiselect-dropdown";
 
 @Component({
   selector: 'app-employee',
@@ -32,7 +32,9 @@ export class EmployeeComponent implements OnInit {
     private formBuilder: FormBuilder,
     private empService: EmployeeService,
     private depService: DepartmentService
-  ) {}
+  ) {
+    this.handleError = this.handleError.bind(this)
+  }
 
   ngOnInit(): void {
     this.initializeForm();
@@ -45,18 +47,19 @@ export class EmployeeComponent implements OnInit {
       id: [''],
       nameFirst: [''],
       nameLast: [''],
-      departments: []
+      departments: [[]]
     });
   }
 
   handleError(error: any): void {
     console.error("An error occurred:", error);
+    this.refreshListAndResetForm();
     throw error;
   }
 
   populateEmployeeData(): void {
-    const { id, nameFirst, nameLast, departments } = this.empDetail.value;
-    Object.assign(this.empObject, { id, nameFirst, nameLast, departments });
+    const {id, nameFirst, nameLast, departments = []} = this.empDetail.value;
+    Object.assign(this.empObject, {id, nameFirst, nameLast, departments});
   }
 
   createEmployee(): void {
@@ -126,7 +129,12 @@ export class EmployeeComponent implements OnInit {
 
   refreshListAndResetForm(): void {
     this.getAllEmployee();
-    this.empDetail.reset();
+    this.empDetail.reset({
+      id: '',
+      nameFirst: '',
+      nameLast: '',
+      departments: []
+    });
     this.empObject = new Employee();
     this.selectedEmployee = new Employee();
   }

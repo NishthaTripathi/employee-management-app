@@ -16,7 +16,7 @@
       </thead>
       <tbody>
       <tr *ngFor="let employee of empList">
-        <td>{{ employee.id}}</td>
+        <td>{{ employee.id }}</td>
         <td>{{ employee.nameFirst }}</td>
         <td>{{ employee.nameLast }}</td>
         <td>
@@ -68,7 +68,9 @@
             </form>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)=refreshListAndResetForm()>
+              Close
+            </button>
             <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="createEmployee()">Submit
             </button>
           </div>
@@ -105,7 +107,9 @@
             </form>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)=refreshListAndResetForm()>
+              Close
+            </button>
             <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="updateEmployee()">
               Save Changes
             </button>

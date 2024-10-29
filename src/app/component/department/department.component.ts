@@ -19,6 +19,7 @@ export class DepartmentComponent implements OnInit {
     private departmentService: DepartmentService
   ) {
     this.departmentForm = this.createDepartmentForm();
+    this.handleError = this.handleError.bind(this);
   }
 
   ngOnInit(): void {
@@ -35,7 +36,10 @@ export class DepartmentComponent implements OnInit {
   }
 
   private handleError(error: any): void {
-    console.error("An error occurred:", error);
+    this.refreshListAndResetForm();
+    console.log("Form reset on error");
+    console.error("An error occurred 1:", error);
+
     throw error;
   }
 
@@ -94,15 +98,21 @@ export class DepartmentComponent implements OnInit {
     this.departmentService.deleteDepartment(departmentId).subscribe({
       next: () => {
         console.log("Department deleted successfully");
-        this.getAllDepartments(); // Refresh the list
+        this.getAllDepartments();
       },
       error: this.handleError
     });
   }
 
-  private refreshListAndResetForm(): void {
+   refreshListAndResetForm(): void {
     this.getAllDepartments();
-    this.departmentForm.reset();
+     this.departmentForm.reset({
+       id: '',
+       name: '',
+       readOnly: false,
+       mandatory: false
+     });
+
     this.department = new Department();
     this.selectedDepartment = null;
   }
